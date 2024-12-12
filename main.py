@@ -87,61 +87,61 @@ def reset_ui():
 # Main window
 root = tk.Tk()
 root.title("Youtube Downloader")
-root.geometry("500x750") # window size
+root.geometry("750x750") # window size
+root.resizable(False,False)
 
-# Welcome labels
-label = tk.Label(root, text="YoutubeDownloader by chrisvobi")
-label.pack(pady=20)
+# Header
+header = tk.Label(root, text="Youtube Video Downloader", font=("Arial", 18, "bold"), fg="blue")
+header.pack(pady=15)
 
-# URL
-url_label = tk.Label(root, text="Enter Youtube URL:")
-url_label.pack(pady=5)
-url_entry = tk.Entry(root, width=50)
-url_entry.pack(pady=5)
+# URL - Fetch
+url_frame = tk.Frame(root)
+url_frame.pack(pady=10)
+tk.Label(url_frame, text="Enter Youtube URL:", font=("Arial", 12)).pack(side="left", padx=5)
+url_entry = tk.Entry(url_frame, width=50, font=("Arial", 12))
+url_entry.pack(side="left", padx=5)
+tk.Button(url_frame, text="Fetch Details", command=fetch_video_details, font=("Arial", 12)).pack(side="left", padx=5)
 
-# Fetch button
-tk.Button(root, text="Fetch Details", command=fetch_video_details).pack(pady=10)
-
-# Title Label
-title_label = tk.Label(root, text="Not fetched yet")
-title_label.pack(pady=10)
-
-# Thumbnail Label
-thumbnail_label = tk.Label(root)
-thumbnail_label.pack(pady=10)
+# Video Details
+details_frame = tk.Frame(root)
+details_frame.pack(pady=10)
+title_label = tk.Label(details_frame, text="Not fetched yet", font=("Arial", 12))
+title_label.pack(pady=5)
+thumbnail_label = tk.Label(details_frame)
+thumbnail_label.pack(pady=5)
 
 # Select Format
-tk.Label(root, text="Choose format:").pack(pady=5)
+format_frame = tk.Frame(root)
+format_frame.pack(pady=10)
+tk.Label(format_frame, text="Choose format:", font=("Arial", 12)).pack(side="left",padx=5)
 format_choice_var = tk.StringVar(value = "Video")
-format_choice_menu = tk.OptionMenu(root, format_choice_var, "Video", "Audio")
-format_choice_menu.pack(pady=5)
+format_choice_menu = tk.OptionMenu(format_frame, format_choice_var, "Video", "Audio")
+format_choice_menu.pack(side="left",padx=5)
 
-# Save Button
-save_button = tk.Button(root, text="Choose Save Location", state="disabled", command=choose_save_location)
+# Save Section
+save_button = tk.Button(root, text="Choose Save Location", state="disabled", command=choose_save_location, font=("Arial", 12))
 save_button.pack(pady=10)
-
-# Save Label
-save_location_label = tk.Label(root, text = "Save Location: Not selected yet")
-save_location_label.pack(pady=10)
+save_location_label = tk.Label(root, text = "Save Location: Not selected yet", font=("Arial", 12))
+save_location_label.pack(pady=5)
 
 # Download Button
-download_button = tk.Button(root, text="Download", state="disabled", command=lambda: download_video(save_location_label.cget("text").split(": ")[-1]))
+download_button = tk.Button(root, text="Download", state="disabled", command=lambda: download_video(save_location_label.cget("text").split(": ")[-1]), font=("Arial", 12))
 download_button.pack(pady=10)
 
-# Progress Label
-progress_label = tk.Label(root, text="Progress: 0%")
+# Progress Section
+progress_label = tk.Label(root, text="Progress: 0%", font=("Arial", 12))
 progress_label.pack(pady=5)
-
-# Progress Bar
 progress_var = tk.DoubleVar()
-progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, length=400)
+progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, length=500)
 progress_bar.pack(pady=5)
 
-# Reset Button
-tk.Button(root, text="Reset", command=reset_ui).pack(pady=10)
-
-# Exit button
-tk.Button(root, text="Exit", command=on_exit).pack(pady=10)
+# Reset and Exit Button
+action_frame = tk.Frame(root)
+action_frame.pack(pady=20)
+exit_button = tk.Button(root, text="Exit", command=on_exit, font=("Arial", 12))
+exit_button.pack(side="left", padx=20)
+reset_button = tk.Button(root, text="Reset", command=reset_ui, font=("Arial", 12))
+reset_button.pack(side="left", padx=20)
 
 # Run
 root.mainloop()
