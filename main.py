@@ -46,8 +46,7 @@ url_entry = tk.Entry(root, width=50)
 url_entry.pack(pady=5)
 
 # Fetch button
-fetch_button = tk.Button(root, text="Fetch Details", command=fetch_video_details)
-fetch_button.pack(pady=10)
+tk.Button(root, text="Fetch Details", command=fetch_video_details).pack(pady=10)
 
 # Title Label
 title_label = tk.Label(root, text="Title: Not fetched yet")
@@ -58,8 +57,7 @@ thumbnail_label = tk.Label(root)
 thumbnail_label.pack(pady=10)
 
 # Exit button
-exit_button = tk.Button(root, text="Exit", command=on_exit)
-exit_button.pack(pady=10)
+tk.Button(root, text="Exit", command=on_exit).pack(pady=10)
 
 # Run
 root.mainloop()
