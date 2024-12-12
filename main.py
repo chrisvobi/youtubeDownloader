@@ -3,7 +3,7 @@ from yt_dlp import YoutubeDL
 import requests
 from io import BytesIO
 from PIL import Image, ImageTk
-from tkinter import filedialog, ttk
+from tkinter import filedialog, ttk, messagebox
 
 def on_exit():
     root.destroy()
@@ -66,14 +66,28 @@ def download_video(save_location):
     else:
         ydl_opts['format'] = 'bestaudio'
 
-    with YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-        title_label.config(text="Download Complete!")
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+            messagebox.showinfo("Download Complete","The download has completed successfully.")
+    except Exception as e:
+        messagebox.showerror("Download Failed", f"An error occurred during the download: {e}")
+
+def reset_ui():
+    title_label.config(text="Not fetched yet")
+    save_location_label.config(text="Save Location: Not selected yet")
+    url_entry.delete(0, tk.END)
+    progress_var.set(0)
+    progress_label.config(text="Progress: 0%")
+    thumbnail_label.config(image="")
+    thumbnail_label.image = None
+    download_button.config(state="disabled")
+    save_button.config(state="disabled")
 
 # Main window
 root = tk.Tk()
 root.title("Youtube Downloader")
-root.geometry("500x700") # window size
+root.geometry("500x750") # window size
 
 # Welcome labels
 label = tk.Label(root, text="YoutubeDownloader by chrisvobi")
@@ -122,6 +136,9 @@ progress_label.pack(pady=5)
 progress_var = tk.DoubleVar()
 progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, length=400)
 progress_bar.pack(pady=5)
+
+# Reset Button
+tk.Button(root, text="Reset", command=reset_ui).pack(pady=10)
 
 # Exit button
 tk.Button(root, text="Exit", command=on_exit).pack(pady=10)
