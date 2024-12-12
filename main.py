@@ -3,7 +3,7 @@ from yt_dlp import YoutubeDL
 import requests
 from io import BytesIO
 from PIL import Image, ImageTk
-from tkinter import filedialog
+from tkinter import filedialog, ttk
 
 def on_exit():
     root.destroy()
@@ -35,11 +35,22 @@ def fetch_video_details():
         title_label.config(text="Error: Could not fetch video details")
         print(f"Error: {e}")
 
+    # set progress to 0 when fetching a new video
+    progress_var.set(0)
+    progress_label.config(text="Progress: 0%")
+
 def choose_save_location():
     folder_selected = filedialog.askdirectory()
     if folder_selected:
         save_location_label.config(text=f"Save location: {folder_selected}")
         download_button.config(state="normal")  # Enable download button after selecting the location
+
+def update_progress(d):
+    if d['status'] == 'downloading':
+        if d.get('downloaded_bytes') and d.get('total_bytes'):
+            percent = d['downloaded_bytes'] / d['total_bytes'] * 100
+            progress_var.set(percent)
+            progress_label.config(text=f"Progress: {int(percent)}%")
 
 def download_video(save_location):
     url = url_entry.get()
@@ -47,6 +58,7 @@ def download_video(save_location):
 
     ydl_opts = {
         'outtmpl': f'{save_location}/%(title)s.%(ext)s',
+        'progress_hooks': [update_progress],
     }
 
     if format_choice == 'Video':
@@ -61,7 +73,7 @@ def download_video(save_location):
 # Main window
 root = tk.Tk()
 root.title("Youtube Downloader")
-root.geometry("500x650") # window size
+root.geometry("500x700") # window size
 
 # Welcome labels
 label = tk.Label(root, text="YoutubeDownloader by chrisvobi")
@@ -101,6 +113,15 @@ save_location_label.pack(pady=10)
 # Download Button
 download_button = tk.Button(root, text="Download", state="disabled", command=lambda: download_video(save_location_label.cget("text").split(": ")[-1]))
 download_button.pack(pady=10)
+
+# Progress Label
+progress_label = tk.Label(root, text="Progress: 0%")
+progress_label.pack(pady=5)
+
+# Progress Bar
+progress_var = tk.DoubleVar()
+progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100, length=400)
+progress_bar.pack(pady=5)
 
 # Exit button
 tk.Button(root, text="Exit", command=on_exit).pack(pady=10)
