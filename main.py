@@ -89,6 +89,7 @@ root = tk.Tk()
 root.title("Youtube Downloader")
 root.geometry("750x750") # window size
 root.resizable(False,False)
+root.iconphoto(False, tk.PhotoImage(file="icon.png"))
 
 # Header
 header = tk.Label(root, text="Youtube Video Downloader", font=("Arial", 18, "bold"), fg="blue")
