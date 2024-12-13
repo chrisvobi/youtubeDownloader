@@ -1,6 +1,7 @@
 # YouTube Downloader
 
-A simple Python-based YouTube video downloader that allows users to download videos or audio from YouTube
+A simple Python-based YouTube video downloader that allows users to download videos or audio from YouTube.
+Also works with playlists.
 
 ## Features
 
