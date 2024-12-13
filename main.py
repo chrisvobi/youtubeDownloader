@@ -11,25 +11,18 @@ def on_exit():
 def fetch_video_details():
     url = url_entry.get()
     try:
-        with YoutubeDL() as ydl:
+        ydl_opts = {'quiet': True, 'extract_flat': True}
+        with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
-            title = info.get('title', 'Unknown Title')
-            thumbnail_url = info.get('thumbnail')
-
-            # update title
-            title_label.config(text=f"{title}")
-
-            # fetch and display thumbnail
-            response = requests.get(thumbnail_url)
-            thumbnail_data = BytesIO(response.content)
-            thumbnail_img = Image.open(thumbnail_data)
-            thumbnail_img = thumbnail_img.resize((200,150), Image.Resampling.LANCZOS)
-            thumbnail = ImageTk.PhotoImage(thumbnail_img)
-            thumbnail_label.config(image=thumbnail)
-            thumbnail_label.image = thumbnail
-
-            # enable save location button
-            save_button.config(state="normal")
+            
+            if 'entries' in info: # playlist
+                print("Playlist detected")
+                video_titles = [entry['title'] for entry in info['entries']]
+                print("Playlist Titles:", video_titles)
+            else: # single video
+                print("Single video")
+                title = info.get('title', 'Unknown Title')
+                print("Video Title: ", title)
 
     except Exception as e:
         title_label.config(text="Error: Could not fetch video details")
