@@ -5,8 +5,6 @@ from io import BytesIO
 from PIL import Image, ImageTk
 from tkinter import filedialog, ttk, messagebox
 
-global playlist
-
 def on_exit():
     root.destroy()
 
@@ -53,6 +51,9 @@ def display_single_video(thumbnail_url):
 def show_playlist_titles(video_titles):
     playlist_listbox.pack(pady=5)
     playlist_listbox.delete(0, tk.END)
+    selection_frame.pack(pady=5)
+    select_all_button.pack(side="left",padx=5)
+    unselect_all_button.pack(side="left",padx=5)
     for title in video_titles:
         playlist_listbox.insert(tk.END, title)
 
@@ -111,6 +112,20 @@ def reset_ui():
     save_button.config(state="disabled")
     playlist_listbox.delete(0, tk.END)
     playlist_listbox.pack_forget()
+    select_all_button.pack_forget()
+    unselect_all_button.pack_forget()
+    selection_frame.pack_forget()
+
+def select_all_videos():
+    playlist_listbox.select_set(0, tk.END)
+    playlist_listbox.focus_set()
+    playlist_listbox.activate(0)
+
+def unselect_all_videos():
+    playlist_listbox.select_clear(0, tk.END)
+    playlist_listbox.selection_clear(0, tk.END)
+    playlist_listbox.activate(-1)
+
 
 # Main window
 root = tk.Tk()
@@ -138,9 +153,14 @@ title_label = tk.Label(details_frame, text="Not fetched yet", font=("Arial", 12)
 title_label.pack(pady=5)
 thumbnail_label = tk.Label(details_frame)
 thumbnail_label.pack(pady=5)
-# Playlist box
 playlist_listbox = tk.Listbox(details_frame, selectmode=tk.MULTIPLE, width=50, height=15)
 playlist_listbox.pack_forget()
+selection_frame = tk.Frame(details_frame)
+selection_frame.pack_forget()
+select_all_button = tk.Button(selection_frame, text="Select All", command=select_all_videos, font=("Arial", 12))
+select_all_button.pack_forget()
+unselect_all_button = tk.Button(selection_frame, text="Unselect All", command=unselect_all_videos, font=("Arial", 12))
+unselect_all_button.pack_forget()
 
 # Select Format
 format_frame = tk.Frame(root)
