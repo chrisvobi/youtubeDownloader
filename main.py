@@ -49,8 +49,10 @@ def display_single_video(thumbnail_url):
         thumbnail_label.image = thumbnail
 
 def show_playlist_titles(video_titles):
-    playlist_listbox.pack(pady=5)
+    listbox_frame.pack(pady=5)
+    playlist_listbox.pack(side=tk.LEFT, fill=tk.BOTH)
     playlist_listbox.delete(0, tk.END)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
     selection_frame.pack(pady=5)
     select_all_button.pack(side="left",padx=5)
     unselect_all_button.pack(side="left",padx=5)
@@ -115,6 +117,7 @@ def reset_ui():
     select_all_button.pack_forget()
     unselect_all_button.pack_forget()
     selection_frame.pack_forget()
+    listbox_frame.pack_forget()
 
 def select_all_videos():
     playlist_listbox.select_set(0, tk.END)
@@ -146,15 +149,23 @@ url_entry = tk.Entry(url_frame, width=50, font=("Arial", 12))
 url_entry.pack(side="left", padx=5)
 tk.Button(url_frame, text="Fetch Details", command=fetch_video_details, font=("Arial", 12)).pack(side="left", padx=5)
 
-# Video Details
+## Video Details
 details_frame = tk.Frame(root)
 details_frame.pack(pady=10)
+# Single Video
 title_label = tk.Label(details_frame, text="Not fetched yet", font=("Arial", 12))
 title_label.pack(pady=5)
 thumbnail_label = tk.Label(details_frame)
 thumbnail_label.pack(pady=5)
-playlist_listbox = tk.Listbox(details_frame, selectmode=tk.MULTIPLE, width=50, height=15)
+# Playlist
+listbox_frame = tk.Frame(details_frame)
+listbox_frame.pack_forget()
+playlist_listbox = tk.Listbox(listbox_frame, selectmode=tk.MULTIPLE, width=50, height=15)
 playlist_listbox.pack_forget()
+scrollbar = tk.Scrollbar(listbox_frame, orient=tk.VERTICAL)
+scrollbar.pack_forget()
+playlist_listbox.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=playlist_listbox.yview)
 selection_frame = tk.Frame(details_frame)
 selection_frame.pack_forget()
 select_all_button = tk.Button(selection_frame, text="Select All", command=select_all_videos, font=("Arial", 12))
