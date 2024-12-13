@@ -133,7 +133,7 @@ def unselect_all_videos():
 # Main window
 root = tk.Tk()
 root.title("Youtube Downloader")
-root.geometry("750x850") # window size
+root.geometry("750x880") # window size
 root.resizable(False,False)
 root.iconphoto(False, tk.PhotoImage(file="icon.png"))
 
@@ -165,6 +165,7 @@ playlist_listbox.pack_forget()
 scrollbar = tk.Scrollbar(listbox_frame, orient=tk.VERTICAL)
 scrollbar.pack_forget()
 playlist_listbox.config(yscrollcommand=scrollbar.set)
+playlist_listbox.config(selectbackground="lightblue", selectforeground="black")
 scrollbar.config(command=playlist_listbox.yview)
 selection_frame = tk.Frame(details_frame)
 selection_frame.pack_forget()
