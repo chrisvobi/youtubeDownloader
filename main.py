@@ -10,27 +10,45 @@ def on_exit():
 
 def fetch_video_details():
     url = url_entry.get()
+    reset_ui()
+    url_entry.insert(0, url)
     try:
         ydl_opts = {'quiet': True, 'extract_flat': True}
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             
             if 'entries' in info: # playlist
-                print("Playlist detected")
                 video_titles = [entry['title'] for entry in info['entries']]
-                print("Playlist Titles:", video_titles)
+                title = info.get('title', 'Unknow Title')
+                show_playlist_titles(video_titles)
+                save_button.config(state="normal")
             else: # single video
-                print("Single video")
                 title = info.get('title', 'Unknown Title')
-                print("Video Title: ", title)
+                thumbnail_url = info.get('thumbnail', None)
+                display_single_video(thumbnail_url)
+                save_button.config(state="normal")
+        
+        title_label.config(text=title)
 
     except Exception as e:
         title_label.config(text="Error: Could not fetch video details")
         print(f"Error: {e}")
 
-    # set progress to 0 when fetching a new video
-    progress_var.set(0)
-    progress_label.config(text="Progress: 0%")
+def display_single_video(thumbnail_url):
+    if thumbnail_url:
+        response = requests.get(thumbnail_url, stream=True)
+        thumbnail_data = BytesIO(response.content)
+        thumbnail_img = Image.open(thumbnail_data)
+        thumbnail_img = thumbnail_img.resize((200,150), Image.Resampling.LANCZOS)
+        thumbnail = ImageTk.PhotoImage(thumbnail_img)
+        thumbnail_label.config(image=thumbnail)
+        thumbnail_label.image = thumbnail
+
+def show_playlist_titles(video_titles):
+    playlist_listbox.pack(pady=5)
+    playlist_listbox.delete(0, tk.END)
+    for title in video_titles:
+        playlist_listbox.insert(tk.END, title)
 
 def choose_save_location():
     folder_selected = filedialog.askdirectory()
@@ -76,11 +94,13 @@ def reset_ui():
     thumbnail_label.image = None
     download_button.config(state="disabled")
     save_button.config(state="disabled")
+    playlist_listbox.delete(0, tk.END)
+    playlist_listbox.pack_forget()
 
 # Main window
 root = tk.Tk()
 root.title("Youtube Downloader")
-root.geometry("750x750") # window size
+root.geometry("750x850") # window size
 root.resizable(False,False)
 root.iconphoto(False, tk.PhotoImage(file="icon.png"))
 
@@ -103,6 +123,9 @@ title_label = tk.Label(details_frame, text="Not fetched yet", font=("Arial", 12)
 title_label.pack(pady=5)
 thumbnail_label = tk.Label(details_frame)
 thumbnail_label.pack(pady=5)
+# Playlist box
+playlist_listbox = tk.Listbox(details_frame, selectmode=tk.MULTIPLE, width=50, height=15)
+playlist_listbox.pack_forget()
 
 # Select Format
 format_frame = tk.Frame(root)
