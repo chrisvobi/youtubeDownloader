@@ -5,10 +5,13 @@ from io import BytesIO
 from PIL import Image, ImageTk
 from tkinter import filedialog, ttk, messagebox
 
+global playlist
+
 def on_exit():
     root.destroy()
 
 def fetch_video_details():
+    global playlist
     url = url_entry.get()
     reset_ui()
     url_entry.insert(0, url)
@@ -19,15 +22,18 @@ def fetch_video_details():
             
             if 'entries' in info: # playlist
                 video_titles = [entry['title'] for entry in info['entries']]
+                global playlist_urls
+                playlist_urls = [entry['url'] for entry in info['entries']]
+                playlist = True
                 title = info.get('title', 'Unknow Title')
                 show_playlist_titles(video_titles)
-                save_button.config(state="normal")
             else: # single video
                 title = info.get('title', 'Unknown Title')
                 thumbnail_url = info.get('thumbnail', None)
                 display_single_video(thumbnail_url)
-                save_button.config(state="normal")
+                playlist = False
         
+        save_button.config(state="normal")
         title_label.config(text=title)
 
     except Exception as e:
@@ -64,22 +70,31 @@ def update_progress(d):
             progress_label.config(text=f"Progress: {int(percent)}%")
 
 def download_video(save_location):
-    url = url_entry.get()
     format_choice = format_choice_var.get()
-
     ydl_opts = {
         'outtmpl': f'{save_location}/%(title)s.%(ext)s',
         'progress_hooks': [update_progress],
     }
-
     if format_choice == 'Video':
         ydl_opts['format'] = 'best'
     else:
         ydl_opts['format'] = 'bestaudio'
-
+    
+    if playlist:
+        selected_indices = playlist_listbox.curselection()
+        if not selected_indices:
+            messagebox.showwarning("No Selection", "Please select at least one video to download.")
+            return
+        selected_urls = [playlist_urls[i] for i in selected_indices]
+    else:
+        url = url_entry.get()
+    
     try:
         with YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            if playlist:
+                ydl.download(selected_urls)
+            else:
+                ydl.download([url])
             messagebox.showinfo("Download Complete","The download has completed successfully.")
     except Exception as e:
         messagebox.showerror("Download Failed", f"An error occurred during the download: {e}")
