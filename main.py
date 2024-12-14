@@ -4,8 +4,27 @@ import requests
 from io import BytesIO
 from PIL import Image, ImageTk
 from tkinter import filedialog, ttk, messagebox
+import configparser
+
+config = configparser.ConfigParser()
+
+def save_config():
+    config["User"] = {
+        "save_location": save_location_label.cget("text").split(": ")[-1]
+    }
+    with open("setting.ini","w") as configfile:
+        config.write(configfile)
+
+def load_config():
+    try:
+        config.read("setting.ini")
+        save_location = config["User"]["save_location"]
+        save_location_label.config(text=f"Save location: {save_location}")
+    except Exception as e:
+        print("No config file found:",e)
 
 def on_exit():
+    save_config()
     root.destroy()
 
 def fetch_video_details():
@@ -34,8 +53,12 @@ def fetch_video_details():
         save_button.config(state="normal")
         title_label.config(text=title)
 
+        if save_location_label["text"] != "Save Location: Not selected yet":
+            download_button.config(state="normal")
+
     except Exception as e:
         title_label.config(text="Error: Could not fetch video details")
+        messagebox.showerror("Error", f"Could not fetch video details: {e}")
         print(f"Error: {e}")
 
 def display_single_video(thumbnail_url):
@@ -104,7 +127,7 @@ def download_video(save_location):
 
 def reset_ui():
     title_label.config(text="Not fetched yet")
-    save_location_label.config(text="Save Location: Not selected yet")
+    # save_location_label.config(text="Save Location: Not selected yet")
     url_entry.delete(0, tk.END)
     progress_var.set(0)
     progress_label.config(text="Progress: 0%")
@@ -207,5 +230,9 @@ exit_button.pack(side="left", padx=20)
 reset_button = tk.Button(root, text="Reset", command=reset_ui, font=("Arial", 12))
 reset_button.pack(side="left", padx=20)
 
+# call on_exit when closing window
+root.protocol("WM_DELETE_WINDOW", on_exit)
+
 # Run
+load_config()
 root.mainloop()
