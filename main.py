@@ -73,9 +73,10 @@ def display_single_video(thumbnail_url):
 
 def show_playlist_titles(video_titles):
     listbox_frame.pack(pady=5)
-    playlist_listbox.pack(side=tk.LEFT, fill=tk.BOTH)
     playlist_listbox.delete(0, tk.END)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    horizontal_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+    playlist_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     selection_frame.pack(pady=5)
     select_all_button.pack(side="left",padx=5)
     unselect_all_button.pack(side="left",padx=5)
@@ -127,7 +128,6 @@ def download_video(save_location):
 
 def reset_ui():
     title_label.config(text="Not fetched yet")
-    # save_location_label.config(text="Save Location: Not selected yet")
     url_entry.delete(0, tk.END)
     progress_var.set(0)
     progress_label.config(text="Progress: 0%")
@@ -185,11 +185,15 @@ listbox_frame = tk.Frame(details_frame)
 listbox_frame.pack_forget()
 playlist_listbox = tk.Listbox(listbox_frame, selectmode=tk.MULTIPLE, width=50, height=15)
 playlist_listbox.pack_forget()
-scrollbar = tk.Scrollbar(listbox_frame, orient=tk.VERTICAL)
-scrollbar.pack_forget()
-playlist_listbox.config(yscrollcommand=scrollbar.set)
 playlist_listbox.config(selectbackground="lightblue", selectforeground="black")
+# Scrollbars
+scrollbar = tk.Scrollbar(listbox_frame, orient=tk.VERTICAL)
+playlist_listbox.config(yscrollcommand=scrollbar.set)
 scrollbar.config(command=playlist_listbox.yview)
+horizontal_scrollbar = tk.Scrollbar(listbox_frame, orient=tk.HORIZONTAL)
+playlist_listbox.config(xscrollcommand=horizontal_scrollbar.set)
+horizontal_scrollbar.config(command=playlist_listbox.xview)
+# Select/Unselect All Buttons
 selection_frame = tk.Frame(details_frame)
 selection_frame.pack_forget()
 select_all_button = tk.Button(selection_frame, text="Select All", command=select_all_videos, font=("Arial", 12))
