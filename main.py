@@ -102,10 +102,16 @@ def download_video(save_location):
         'outtmpl': f'{save_location}/%(title)s.%(ext)s',
         'progress_hooks': [update_progress],
     }
+
     if format_choice == 'Video':
-        ydl_opts['format'] = 'best'
+        ydl_opts['format'] = 'bestvideo+bestaudio/best'
     else:
-        ydl_opts['format'] = 'bestaudio'
+        ydl_opts['format'] = 'bestaudio/best'
+        ydl_opts['postprocessors'] = [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }]
     
     if playlist:
         selected_indices = playlist_listbox.curselection()
