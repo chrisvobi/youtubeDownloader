@@ -58,6 +58,7 @@ def fetch_video_details():
 
     except Exception as e:
         title_label.config(text="Error: Could not fetch video details")
+        messagebox.showerror("Error", f"Could not fetch video details: {e}")
         print(f"Error: {e}")
 
 def display_single_video(thumbnail_url):
